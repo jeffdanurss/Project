@@ -9,7 +9,7 @@
 <body>
     <header>
         <h1>Bienvenidos a mi Página Web</h1>
-        <h1>Hola Mundo desde $(hostname -f)</h1>
+        <h1>Hola Mundo desde <?php echo $_SERVER['SERVER_ADDR']; ?></h1>
     </header>
 
     <main>
