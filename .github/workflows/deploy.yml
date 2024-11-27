@@ -1,4 +1,4 @@
-name: EC2-CHANGES
+name: Send-EC2
 
 on:
   push:
@@ -47,4 +47,4 @@ jobs:
             sudo chmod -R 755 /var/www/html
             
             # Reinicia Apache para aplicar los cambios
-            sudo systemctl restart apache2
+            sudo systemctl restart apache2
