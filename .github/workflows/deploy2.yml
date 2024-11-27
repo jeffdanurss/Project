@@ -3,7 +3,7 @@ name: EC2-CHANGES
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
