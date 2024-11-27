@@ -1,10 +1,9 @@
-name: Push-to-EC2
+name: EC2-CHANGES
 
-# Trigger deployment only on push to main branch
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -19,20 +18,33 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST2_DNS }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
 
       - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST2_DNS }}
+          host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Actualiza el sistema y Apache
             sudo apt-get -y update
             sudo apt-get install -y apache2
+            sudo apt-get install -y php libapache2-mod-php
             sudo systemctl start apache2
             sudo systemctl enable apache2
-            cd home
+            
+            # Cambia al directorio donde están tus archivos clonados
+            cd /home/${{ secrets.USERNAME }}/{{ secrets.TARGET_DIR }}
+            
+            # Mueve todos los archivos al directorio de Apache
             sudo mv * /var/www/html
+            
+            # Cambia los permisos para que Apache pueda acceder a los archivos
+            sudo chown -R www-data:www-data /var/www/html
+            sudo chmod -R 755 /var/www/html
+            
+            # Reinicia Apache para aplicar los cambios
+            sudo systemctl restart apache2
